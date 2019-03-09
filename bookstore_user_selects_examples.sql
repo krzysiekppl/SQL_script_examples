@@ -191,5 +191,61 @@ select month(max(date_of_birth)) as 'month' from authors;
 
 select * from customers;
 
+use bookstore;
+
+select * from publishers where address_id in (select id from addresses where city = 'Lublin');
+
+select first_name, last_name from authors where id in (
+select author_id from books_authors where book_id in (
+select id from books where category_id in(
+select id from categories where code = 'FANTASY'
+)));
+
+select max(date_of_birth),sex from customers group by sex;
+
+select count(category_id), category_id from books 
+where length(title)>12
+group by category_id;
+
+select (select code from payments_type where id = payment_type_id)as 'payment type',count(id) ,payment_type_id  from orders group by payment_type_id;
+
+select count(id), year(date_of_birth) from customers group by year(date_of_birth);
+
+select city,count(city) from addresses group by city
+having count(city)>10; 
+
+select city,count(city) from addresses where city like '%a%' group by city having count(city) > 10;
+
+select category_id,count(id) from books where pages_number between 250 and 350 group by category_id having count(id) < 9; 
+
+-- 1
+select street,count(street),city from addresses where city = 'Krakrów' group by street;
+-- 2 
+select customer_id,count(customer_id) from orders group by customer_id order by count(customer_id) desc limit 1;
+-- 3
+select sex,count(sex) from customers group by sex;
+-- 4
+select (select name from categories where id = category_id),sum(pages_number) as 'Łączna ilość stron w kategorii' from books group by category_id;
+-- 5
+select (select name from publishers where id = publisher_id ),title as 'Najdłuższy tytuł książki wydawnictwa' from books group by publisher_id order by title desc;
+
+-- 6
+select (select code from format where id = format_id),count(format_id) from copies group by format_id order by count(format_id) asc limit 1;
+-- 7
+select city, count(street) from addresses group by city having count(street) > 20;
+-- 8
+select (select code from payments_type where id = payment_type_id),count(payment_type_id)
+from orders;
+
+select * from books where publisher_id = (select id from publishers where id = 4);
+
+select books.title,publishers.name from books inner join publishers on books.publisher_id = publishers.id;
+select b.title,p.name from books b inner join publishers p on b.publisher_id = p.id;
+
+
+
+
+
+
 
 

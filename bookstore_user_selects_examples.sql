@@ -228,7 +228,6 @@ select sex,count(sex) from customers group by sex;
 select (select name from categories where id = category_id),sum(pages_number) as 'Łączna ilość stron w kategorii' from books group by category_id;
 -- 5
 select (select name from publishers where id = publisher_id ),title as 'Najdłuższy tytuł książki wydawnictwa' from books group by publisher_id order by title desc;
-
 -- 6
 select (select code from format where id = format_id),count(format_id) from copies group by format_id order by count(format_id) asc limit 1;
 -- 7
@@ -242,10 +241,66 @@ select * from books where publisher_id = (select id from publishers where id = 4
 select books.title,publishers.name from books inner join publishers on books.publisher_id = publishers.id;
 select b.title,p.name from books b inner join publishers p on b.publisher_id = p.id;
 
+select * from customers
+inner join addresses on customers.address_id = addresses.id;
 
+select * from customers
+inner join addresses on customers.address_id = address_id; -- wrong :)
 
+select c.id, concat(c.first_name, '',c.last_name),a.city,a.street
+from customers c left join addresses a 
+on c.address_id = a.id
+group by sex
+having count(a.id)>3
+limit 1;
 
+select b.title, a.first_name, a.last_name from books b 
+inner join books_authors ba on b.id = ba.book_id
+inner join authors a on ba.author_id = a.id
+inner join categories c on b.category_id = c.id
+where c.code = 'CRIME' and b.pages_number between 150 and 400
+and year(a.date_of_birth) = '1964';
 
+select * from customers c right join addresses a on a.id = c.address_id;
 
+-- Wyświetl wszystkie zamówienia oraz ich kod typu płatności
 
+select o.*,pt.code from orders o inner join payments_type pt on o.payment_type_id = pt.id;
+-- 1 
+select b.title,c.name,c.code from books b inner join categories c on b.category_id = c.id;
+-- 2 
+select b.id,b.title, b.pages_number, b.isbn, p.name, p.id, c.name, c.id from books b 
+inner join publishers p on b.publisher_id = p.id
+inner join categories c on b.category_id = c.id;
+-- 3
+
+-- 4
+select b.title, concat(substring(a.first_name,1,1),substring(a.last_name,1,1)) from books b 
+inner join books_authors ba on b.id = ba.book_id
+inner join authors a on a.id = ba.author_id;
+-- 5 
+select c.*, a.zip_code from customers c 
+inner join addresses a on c.address_id = a.id
+where c.phone_number is null;
+
+-- 6
+select o.id, c.first_name, c.last_name,pt.code from orders o inner join customers c on o.customer_id = c.id 
+inner join payments_type pt on pt.id = o.payment_type_id;
+-- 7
+select upper(a.city) as 'Miast' ,a.street as 'Ulica',a.street_no as 'Numer posesji',c.id as 'Id klienta' from addresses a inner join customers c;
+-- 8 
+select p.name,b.title,c.code from books b 
+inner join publishers p on p.id = b.publisher_id
+inner join categories c on b.category_id = c.id
+where c.code = 'FANTASY';
+-- 9
+select b.title,count(c.book_id) from order_details od 
+inner join copies c on c.id = od.copy_book_id 
+inner join books b on c.book_id = b.id
+group by b.id
+order by count(copy_book_id) desc
+limit 4;
+-- 10 
+select a.id,a.first_name,count(ba.id) from authors a inner join books_authors ba on a.id = ba.author_id
+group by a.id order by count(ba.id);
 

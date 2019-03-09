@@ -303,4 +303,37 @@ limit 4;
 -- 10 
 select a.id,a.first_name,count(ba.id) from authors a inner join books_authors ba on a.id = ba.author_id
 group by a.id order by count(ba.id);
+-- 11
+select c.id,c.first_name, c.last_name,o.*,od.* from customers c 
+inner join orders o on c.id = o.customer_id
+inner join order_details od on od.order_id =o.id
+inner join copies co on co.id = od.copy_book_id
+inner join books b on co.book_id = b.id;
+
+
+create view customers_addresses_v as 
+select c.first_name,c.last_name,a.city,a.street,a.zip_code,a.street_no,a.home_no from customers c inner join addresses a on c.address_id = a.id;
+
+select * from customers_addresses_v;
+
+rename table addresses to addresses_t;
+
+check table customers_addresses_v;
+
+CREATE 
+     OR REPLACE ALGORITHM = UNDEFINED 
+    DEFINER = `bookstore_admin`@`localhost` 
+    SQL SECURITY DEFINER
+VIEW `bookstore`.`customers_addresses_v` AS
+    SELECT 
+        `c`.`first_name` AS `first_name`,
+        `c`.`last_name` AS `last_name`,
+        `a`.`city` AS `city`,
+        `a`.`street` AS `street`,
+        `a`.`zip_code` AS `zip_code`,
+        `a`.`street_no` AS `street_no`,
+        `a`.`home_no` AS `home_no`
+    FROM
+        (`bookstore`.`customers` `c`
+        JOIN `bookstore`.`addresses_t` `a` ON ((`c`.`address_id` = `a`.`id`)));
 

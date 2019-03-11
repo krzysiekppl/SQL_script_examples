@@ -337,3 +337,86 @@ VIEW `bookstore`.`customers_addresses_v` AS
         (`bookstore`.`customers` `c`
         JOIN `bookstore`.`addresses_t` `a` ON ((`c`.`address_id` = `a`.`id`)));
 
+-- Indexes
+
+create index pages_number_i on books (pages_number);
+show index from books;
+drop index pages_number_i on books;
+
+-- procedures
+
+delimiter //
+create procedure show_customers()
+begin
+select*from customers;
+end//
+delimiter ;
+
+call show_customers();
+drop procedure if exists show_customers;
+
+
+delimiter //
+create procedure show_customers_by_name(in _first_name varchar (40))
+begin
+select*from customers where first_name = _first_name;
+end//
+delimiter ;
+
+call show_customers_by_name('Jan');
+
+
+delimiter //
+create procedure update_home_no (in _street varchar (40), in _home_no int)
+	begin
+		update addresses_t set home_no = _home_no where street = _street limit 1;
+	end//
+delimiter ;
+
+call update_home_no('Piękna',333);
+drop procedure update_home_no;
+
+drop procedure update_cost;
+select * from addresses_t;
+call update_cost ()
+
+delimiter //
+create procedure is_any_customer_exists (out flag int)
+	begin
+		declare _customer_exists int default 0;
+		select count(id) from customers_t into _customers_exists;
+		if (_customer_exists>0) then
+			set flag = 1;
+		else
+			set flag = 0;
+		end if;
+	end//
+delimiter ;
+
+drop procedure calculator;
+
+delimiter //
+create procedure calculator (in a int, in b int, in operation varchar(1))
+	begin
+		if(strcmp(operation,'+')=0) then
+			select a+b as '';
+		elseif (strcmp(operation,'-')=0) then
+			select a-b as '';
+        elseif (strcmp(operation,'*')=0) then
+			select a*b as '';    
+		elseif (strcmp(operation,'/')=0) then
+			select a/b as '';
+		else 
+			select '' as '';
+		end if;
+    end//
+delimiter ;
+
+call calculator (1,2,'+');
+
+update books b  inner join categories c on b.category_id = c.id
+set pages_number = 250
+where c.code = "CRIME";
+
+
+
